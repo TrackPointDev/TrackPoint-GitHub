@@ -48,5 +48,4 @@ jobs:
                     --allow-unauthenticated \
                     --timeout=600s \
                     --set-env-vars="APP_ID"=${{ secrets.APP_ID }}
-                    --set-env-vars="PRIVATE_KEY"=${{ secrets.PRIVATE_KEY }}
                     --set-env-vars="WEBHOOK_SECRET"=${{ secrets.WEBHOOK_SECRET }}
