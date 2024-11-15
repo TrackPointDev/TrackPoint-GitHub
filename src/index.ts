@@ -4,6 +4,11 @@ import express from "express";
 const app = express();
 const probot = new Probot();
 
+const PORT = 8080;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
 probot.load((app) => {
     app.on("issues.opened", async (context) => {
         const issueComment = context.issue({
@@ -63,7 +68,3 @@ probot.load((app) => {
     });
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
