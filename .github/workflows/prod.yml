@@ -45,4 +45,5 @@ jobs:
                 gcloud run deploy trackpoint-github-app \
                     --image eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/runner:latest \
                     --region europe-north1 \
-                    --allow-unauthenticated 
+                    --allow-unauthenticated \
+                    --timeout=600s
