@@ -47,5 +47,5 @@ jobs:
                     --region europe-north1 \
                     --allow-unauthenticated \
                     --timeout=600s \
-                    --set-env-vars="APP_ID"=${{ secrets.APP_ID }} \
+                    --set-env-vars="GITHUB_APP_ID"=${{ secrets.APP_ID }} \
                     --set-env-vars="GITHUB_PRIVATE_KEY"=${{ secrets.PRIVATE_KEY }}
