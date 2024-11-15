@@ -7,5 +7,5 @@ ENV NODE_ENV=production
 ENV PORT=8080
 EXPOSE 8080
 COPY . .
-CMD ["node", "dist/index.js"]
+CMD ["node", "src/index.js"]
 
