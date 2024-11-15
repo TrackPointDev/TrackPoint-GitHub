@@ -1,14 +1,26 @@
 import { Probot } from "probot";
+import express from "express";
 
-export default (app: Probot) => {
-  app.on("issues.opened", async (context) => {
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+export default (probotApp: Probot) => {
+  probotApp.on("issues.opened", async (context) => {
     const issueComment = context.issue({
       body: "Thanks for opening this issue!",
     });
     await context.octokit.issues.createComment(issueComment);
   });
 
-  app.on("issues.edited", async (context) => {
+  probotApp.on("issues.edited", async (context) => {
     const owner = context.payload.repository.owner.login;
     const repo = context.payload.repository.name;
     const issueNumber = context.payload.issue.number;
