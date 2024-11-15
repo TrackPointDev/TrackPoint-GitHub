@@ -1,11 +1,19 @@
 FROM node:20-slim
+
 WORKDIR /app
+
 COPY package.json package-lock.json ./
-RUN npm ci --production
-RUN npm cache clean --force
+
+RUN npm ci --production && cache clean --force
+
+COPY . .
+
+RUN npm run build
+
 ENV NODE_ENV=production
 ENV PORT=8080
+
 EXPOSE 8080
-COPY . .
+
 CMD ["node", "lib/index.js"]
 
