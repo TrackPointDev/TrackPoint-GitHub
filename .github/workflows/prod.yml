@@ -3,10 +3,10 @@ name: Build, Test and Deploy to Cloud Run
 on:
     push:
         branches:
-            - probot-setup
+            - main
     pull_request:
         branches:
-            - probot-setup
+            - main
 
 jobs:
     push_to_ar:
