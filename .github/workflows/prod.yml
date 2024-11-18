@@ -37,3 +37,4 @@ jobs:
                 --set-secrets=APP_ID=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/APP_ID:latest \
                 --set-secrets=PRIVATE_KEY=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/PRIVATE_KEY:latest \
                 --set-secrets=WEBHOOK_SECRET=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/WEBHOOK_SECRET:latest \
+                --service-account=trackpoint-github-app@trackpointdb.iam.gserviceaccount.com
