@@ -1,15 +1,15 @@
 {
-  "name": "@probot/example-google-cloud-function",
+  "name": "@probot/trackpoint-github",
   "version": "1.0.0",
   "private": true,
-  "description": "Probot & Google Cloud Functions example",
+  "description": "TrackPoints GitHub integration using Probot & Google Cloud Functions",
   "scripts": {
     "start": "probot run ./app.js",
     "test": "node test.js"
   },
-  "author": "Gregor Martynus (https://twitter.com/gr2m)",
+  "author": "TrackPoint (https://github.com/TrackPointDev)",
   "license": "ISC",
-  "repository": "github:probot/example-google-cloud-function",
+  "repository": "github:TrackPointDev/TrackPoint-GitHub",
   "dependencies": {
     "probot": "^12.4.0"
   },
