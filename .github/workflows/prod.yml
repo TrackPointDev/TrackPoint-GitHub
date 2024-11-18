@@ -1,0 +1,40 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+    deploy:
+        name: Deploy to Google Cloud Function
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - id: 'auth'
+              uses: 'google-github-actions/auth@v2'
+              with:
+                credentials_json: '${{ secrets.GCP_CREDENTIALS }}'  
+
+            - name: Set up Cloud SDK
+              uses: 'google-github-actions/setup-gcloud@v2'
+              with:
+                project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+            - name: Deploy to GCF
+              run: |
+                gcloud functions deploy trackpoint-github-gcf \
+                --runtime nodejs18 \
+                --allow-unauthenticated \
+                --trigger-http \
+                --entry-point probotApp \
+                --region europe-west3 \
+                --set-env-vars "APP_ID"=${{ secrets.APP_ID }} \
+                --set-env-vars "PRIVATE_KEY"=${{ secrets.PRIVATE_KEY }} \
+                --set-env-vars "WEBHOOK_SECRET"=${{ secrets.WEBHOOK_SECRET }} \
+                --service-account=trackpoint-github-app@trackpointdb.iam.gserviceaccount.com

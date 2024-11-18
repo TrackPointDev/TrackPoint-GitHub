@@ -1,0 +1,51 @@
+name: Build, Test and Deploy to Cloud Run
+
+on:
+    push:
+        branches:
+            - notdefined
+    pull_request:
+        branches:
+            - notdefined
+
+jobs:
+    push_to_ar:
+        permissions:
+            contents: 'read'
+            id-token: 'write'
+
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - id: 'auth'
+              uses: 'google-github-actions/auth@v2'
+              with:
+                credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+            
+            - name: Set up Cloud SDK
+              uses: 'google-github-actions/setup-gcloud@v2'
+              with:
+                project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+            - name: Configure Docker for GCR
+              run: gcloud auth configure-docker --quiet
+            
+            - name: Build Docker image
+              run: |
+                docker build -f Dockerfile -t eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/runner:latest .
+
+            - name: Push Docker image to Google Container Registry
+              run: |
+                docker push eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/runner:latest
+
+            - name: Deploy to Cloud Run
+              run: |
+                gcloud run deploy trackpoint-github-app \
+                    --image eu.gcr.io/${{ secrets.GCP_PROJECT_ID }}/runner:latest \
+                    --region europe-north1 \
+                    --allow-unauthenticated \
+                    --timeout=600s \
+                    --set-env-vars="GITHUB_APP_ID"=${{ secrets.APP_ID }} \
+                    --set-env-vars="GITHUB_PRIVATE_KEY"=${{ secrets.PRIVATE_KEY }}

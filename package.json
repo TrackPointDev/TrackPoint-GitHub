@@ -1,0 +1,26 @@
+{
+  "name": "@probot/trackpoint-github",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TrackPoints GitHub integration using Probot & Google Cloud Functions",
+  "scripts": {
+    "start": "probot run ./app.js",
+    "test": "node test.js"
+  },
+  "author": "TrackPoint (https://github.com/TrackPointDev)",
+  "license": "ISC",
+  "repository": "github:TrackPointDev/TrackPoint-GitHub",
+  "dependencies": {
+    "probot": "^12.4.0"
+  },
+  "devDependencies": {
+    "nock": "^13.2.9",
+    "smee-client": "^1.2.3",
+    "uvu": "^0.5.6"
+  },
+  "release": {
+    "branches": [
+      "probot-setup"
+    ]
+  }
+}

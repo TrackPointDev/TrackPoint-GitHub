@@ -1,2 +1,13 @@
-# TrackPoint-GitHub
-This repo is for hosting the GitHub App that communicates with the backend
+# probotapphaha
+
+> A GitHub App built with [Probot](https://github.com/probot/probot)
+
+## Setup
+
+```sh
+# Install dependencies
+npm install
+
+# Run the bot
+npm start
+```
