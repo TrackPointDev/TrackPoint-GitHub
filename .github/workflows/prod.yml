@@ -34,7 +34,5 @@ jobs:
                 --trigger-http \
                 --entry-point probotApp \
                 --region europe-west3 \
-                --set-secrets=APP_ID=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/APP_ID:latest \
-                --set-secrets=PRIVATE_KEY=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/PRIVATE_KEY:latest \
-                --set-secrets=WEBHOOK_SECRET=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/WEBHOOK_SECRET:latest \
+                --set-env-vars APP_ID="${{secrets.APP_ID}}",PRIVATE_KEY="${{secrets.PRIVATE_KEY}}",WEBHOOK_SECRET="${{secrets.WEBHOOK_SECRET}}" \
                 --service-account=trackpoint-github-app@trackpointdb.iam.gserviceaccount.com
