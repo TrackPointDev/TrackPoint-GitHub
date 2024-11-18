@@ -34,7 +34,7 @@ jobs:
                 --trigger-http \
                 --entry-point probotApp \
                 --region europe-west3 \
-                --set-env-vars "APP_ID=${{ secrets.APP_ID }}" \
-                --set-env-vars "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" \
-                --set-env-vars "WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}" \
+                --set-env-vars=APP_ID="${{ secrets.APP_ID }}" \
+                --set-env-vars=PRIVATE_KEY="${{ secrets.PRIVATE_KEY }}" \
+                --set-env-vars=WEBHOOK_SECRET="${{ secrets.WEBHOOK_SECRET }}" \
                 --service-account=trackpoint-github-app@trackpointdb.iam.gserviceaccount.com
