@@ -26,6 +26,14 @@ jobs:
               with:
                 project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+            - id: 'secrets'
+              uses: 'google-github-actions/get-secretmanager-secrets@v2'
+              with:
+                secrets: |-
+                  APP_ID:${{ secrets.GCP_PROJECT_ID }}/APP_ID
+                  PRIVATE_KEY:${{ secrets.GCP_PROJECT_ID }}/PRIVATE_KEY
+                  WEBHOOK_SECRET:${{ secrets.GCP_PROJECT_ID }}/WEBHOOK_SECRET
+
             - name: Deploy to GCF
               run: |
                 gcloud functions deploy trackpoint-github-gcf \
@@ -33,7 +41,7 @@ jobs:
                 --allow-unauthenticated \
                 --trigger-http \
                 --entry-point probotApp \
-                --region europe-west3
-                --set-env-vars="APP_ID"=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/APP_ID:latest \
-                --set-env-vars="PRIVATE_KEY"=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/PRIVATE_KEY:latest \
-                --set-env-vars="WEBHOOK_SECRET"=projects/${{ secrets.GCP_PROJECT_ID }}/secrets/WEBHOOK_SECRET:latest
+                --region europe-west3 \
+                --set-env-vars "APP_ID=${{ secrets.APP_ID }}" \
+                --set-env-vars "PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}" \
+                --set-env-vars "WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}" 
