@@ -20,7 +20,7 @@
   },
   "release": {
     "branches": [
-      "main"
+      "probot-setup"
     ]
   }
 }
