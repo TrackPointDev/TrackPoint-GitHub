@@ -2,7 +2,7 @@ name: Deploy
 on:
   push:
     branches:
-      - probot-setup
+      - main
   pull_request:
     branches:
       - main
@@ -10,7 +10,7 @@ on:
 
 jobs:
     deploy:
-        name: deploy-gcf
+        name: Deploy to Google Cloud Function
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout code
