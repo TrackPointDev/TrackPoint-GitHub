@@ -26,7 +26,7 @@ jobs:
             - name: Deploy to GCF
               run: |
                 gcloud functions deploy example-google-cloud-function \
-                --runtime nodejs12 \
+                --runtime nodejs18 \
                 --allow-unauthenticated \
                 --trigger-http \
                 --entry-point probotApp \
