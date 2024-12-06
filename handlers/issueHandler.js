@@ -1,4 +1,3 @@
-const app = require("../app").default;
 const { validateJsonObject } = require("../utils/jsonValidator");
 
 module.exports = (app) => {
