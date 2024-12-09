@@ -16,13 +16,13 @@ module.exports = (app, { getRouter }) => {
     // Check if getRouter is available
     if (getRouter) {
         // Create a router with a base path
-        app.log("Router findss");
+        app.log("Router found");
 
         const router = getRouter('/my-app');
         getRoutes(router);
-        postRoutes(router);
+        postRoutes(router, app);
 
     } else {
-      app.log("NO ROUTER LALA");
+      app.log("No router found");
     }
 };
