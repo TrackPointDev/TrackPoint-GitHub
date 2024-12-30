@@ -5,4 +5,10 @@ const app = require("./app");
 exports.probotApp = createNodeMiddleware(app, {
   probot: createProbot(),
   webhooksPath: "/my-app", // Ensure this matches your base path
+  onUnhandledRequest: (req, res) => {
+    console.log(`Unhandled request: ${req.method} ${req.url}`);
+    res.status(404).send('Not Found');
+  }
 });
+
+console.log("Probot middleware initialized");
