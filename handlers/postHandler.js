@@ -23,66 +23,35 @@ exports.submitData = async (req, res) => {
 
 exports.initialSetup = async (req, res, app) => {
     const payload = req.body;
-    const { repoOwner, repoName, issueTitle, issueBody, secret } = payload;
+    const {repoOwner, repoName, tempPW, installationID, tasks } = payload;
 
-    if (secret !== process.env.SECRET_TOKEN) {
+    if (tempPW !== process.env.TEMPPW) {
         return res.status(403).send('Forbidden');
     }
 
     try {
         // Use the Probot app instance to authenticate
-        const github = await app.auth();
+        const github = await app.auth(installationID);
         
-        // Retrieve the installation ID
-        const installationId = await getInstallationId(github, repoOwner, repoName);
-        if (!installationId) {
-            throw new Error('Installation ID not found for the specified repository owner.');
+        const issueList = [];
+
+        for (const task of tasks) {
+            const issueTitle = `${task.title}`
+            const issueBody = `${task.description}`
+            // Create an issue using the authenticated installation
+            const response = await github.issues.create({
+                owner: repoOwner,
+                repo: repoName,
+                title: issueTitle,
+                body: issueBody,
+            });
+
+            issueList.push({ title: issueTitle, number: response.data.number });
         }
         
-        app.log("HELLO ID:", installationId)
-
-        // Authenticate as the installation
-        const installationGithub = await app.auth(installationId);
-
-        // Create an issue using the authenticated installation
-        await installationGithub.issues.create({
-            owner: repoOwner,
-            repo: repoName,
-            title: issueTitle,
-            body: issueBody,
-        });
-
-        res.status(200).send('Issue created!');
+        res.status(200).send(issueList);
     } catch (error) {
         console.error('Error creating issue:', error);
         res.status(500).send('Error creating issue');
-    }
-};
-
-const getInstallationId = async (github, repoOwner, repoName) => {
-    try {
-        // List all installations for the authenticated app
-        const installations = await github.apps.listInstallationsForAuthenticatedUser();
-
-        // Iterate through installations to find the matching one
-        for (const installation of installations.data) {
-            // List repositories for each installation
-            const repos = await github.apps.listReposAccessibleToInstallation({
-                installation_id: installation.id
-            });
-
-            // Check if the specified repository is in the list
-            for (const repo of repos.data.repositories) {
-                if (repo.owner.login === repoOwner && repo.name === repoName) {
-                    return installation.id;
-                }
-            }
-        }
-
-        // If no matching installation is found, return null or throw an error
-        return null;
-    } catch (error) {
-        console.error('Error retrieving installation ID:', error);
-        throw error;
     }
 };
