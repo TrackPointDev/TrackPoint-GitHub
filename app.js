@@ -9,20 +9,12 @@ const postRoutes = require('./routes/postRoutes');
  */
 module.exports = (app, { getRouter }) => {
     app.log("Yay! The app was loaded!");
+    console.log("Yay! The app was loaded!")
 
     // Initialize the issue handler
     issueHandler(app);
+    const router = getRouter('/my-app');
 
-    // Check if getRouter is available
-    if (getRouter) {
-        // Create a router with a base path
-        app.log("Router found");
-
-        const router = getRouter('/my-app');
-        getRoutes(router);
-        postRoutes(router, app);
-
-    } else {
-      app.log("No router found");
-    }
+    getRoutes(router);
+    postRoutes(router, app);
 };
