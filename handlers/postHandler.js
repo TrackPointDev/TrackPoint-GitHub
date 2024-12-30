@@ -25,7 +25,7 @@ exports.initialSetup = async (req, res, app) => {
     const payload = req.body;
     const {repoOwner, repoName, tempPW, installationID, tasks } = payload;
 
-    if (tempPW !== process.env.TEMPPW) {
+    if (tempPW !== process.env.WEBHOOK_SECRET) {
         return res.status(403).send('Forbidden');
     }
 
