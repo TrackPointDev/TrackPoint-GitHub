@@ -13,8 +13,20 @@ module.exports = (app, { getRouter }) => {
 
     // Initialize the issue handler
     issueHandler(app);
-    const router = getRouter('/my-app');
+    
+    // Check if getRouter is available
+    if (getRouter) {
+        // Create a router with a base path
+        app.log("Router found");
+        console.log("Router found")
 
-    getRoutes(router);
-    postRoutes(router, app);
+        const router = getRouter('/my-app');
+
+        getRoutes(router);
+        postRoutes(router, app);
+
+    } else {
+      app.log("No router found");
+      console.log("No router found")
+    }
 };
