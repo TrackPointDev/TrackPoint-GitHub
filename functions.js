@@ -18,11 +18,14 @@ app.use('/', createNodeMiddleware(appFunction, { probot }));
 getRoutes(app)
 postRoutes(app, probot)
 
-// Start the server
+exports.probotApp = app;
+// Start the server LOCAL DEV ONLY dont deploy this
+/*
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+*/
 
 console.log("Probot middleware initialized");
