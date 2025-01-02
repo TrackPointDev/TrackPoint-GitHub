@@ -4,7 +4,7 @@
   "private": true,
   "description": "TrackPoints GitHub integration using Probot & Google Cloud Functions",
   "scripts": {
-    "start": "functions-framework --target=probotApp",
+    "start": "node server.js",
     "test": "node test.js"
   },
   "author": "TrackPoint (https://github.com/TrackPointDev)",

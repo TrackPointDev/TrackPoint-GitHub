@@ -7,8 +7,8 @@ module.exports = (router) => {
     router.post('/submit', postHandler.submitData);
 };
 
-module.exports = (router, app) => {
+module.exports = (router, probot) => {
     router.use(express.json());
 
-    router.post('/initial-setup', (req, res) => postHandler.initialSetup(req, res, app));
+    router.post('/initial-setup', (req, res) => postHandler.initialSetup(req, res, probot));
 };

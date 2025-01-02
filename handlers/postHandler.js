@@ -23,9 +23,9 @@ exports.submitData = async (req, res) => {
 
 exports.initialSetup = async (req, res, app) => {
     const payload = req.body;
-    const {repoOwner, repoName, tempPW, installationID, tasks } = payload;
+    const {repoOwner, repoName, secret, installationID, tasks } = payload;
 
-    if (tempPW !== process.env.WEBHOOK_SECRET) {
+    if (secret !== process.env.WEBHOOK_SECRET) {
         return res.status(403).send('Forbidden');
     }
 
