@@ -10,7 +10,7 @@ module.exports = (router, probot) => {
         next();
     };
     
-    //Dummy routes for internal calls test
+    //Dummy routes for internal test calls
     router.post('/test', validateRequest, (req, res) => {
         try {
             postHandler.test(req, res, probot);

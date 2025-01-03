@@ -8,10 +8,11 @@
 # Install dependencies
 npm install
 
+# Run the app locally
+npm start
+
 # run smee locally
 smee -u https://smee.io/tnw3bBUmZV7tUd1P -p 3000
 
-# Run the bot locally
-npm start
 
 ```

@@ -8,8 +8,6 @@ require('dotenv').config();
 // Create an Express app
 const app = express();
 const probot = createProbot();
-//getRoutes(expressApp)
-//postRoutes(app, middleware)
 
 // Use Probot's middleware for GitHub webhooks
 app.use('/', createNodeMiddleware(appFunction, { probot }));
@@ -18,11 +16,12 @@ app.use('/', createNodeMiddleware(appFunction, { probot }));
 getRoutes(app)
 postRoutes(app, probot)
 
+// Export the Express app for deployment as a Google Cloud Function entry point
 exports.probotApp = app;
-// Start the server LOCAL DEV ONLY dont deploy this
+
+// LOCAL DEV ONLY dont deploy this
 /*
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
