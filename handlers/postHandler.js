@@ -2,7 +2,7 @@ const { validateJsonObject } = require("../utils/jsonValidator");
 
 exports.test = async (req, res, app) => {
     const payload = req.body;
-    app.log(payload)
+    console.log(payload)
     res.status(200).send("request received successfully")
 }
 
@@ -53,10 +53,8 @@ exports.taskUpdate = async (req, res, app) => {
         const isValid = await validateJsonObject(payload, schemaUrl);
         if (!isValid) {
             console.error(`Failed to validate JSON for issue #${issueNumber}`);
-            app.log(`Failed to validate JSON for issue #${issueNumber}`);
             return res.status(400).send('Failed to validate JSON');
         }
-        app.log("json is valid")
         const {repoOwner, repoName, installationID, description, issueID, priority, story_point, title} = payload
         const github = await app.auth(installationID)
 
