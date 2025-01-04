@@ -8,10 +8,18 @@ const url = baseUrl + customRoute;
 
 module.exports = (app) => {
     app.on("issues.opened", async (context) => {
+
+        // Check if the event was triggered by a bot
+        if (context.isBot) {
+            console.info('Ignoring event triggered by a bot');
+            return;
+        }
+
         const { owner, repo } = context.repo();
         const issueNumber = context.payload.issue.number;
         const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`;
-
+        
+        //TODO make priority and storypoint take from project
         const jsonObject = {
             "repoOwner": owner,
             "repo": repo,
@@ -39,7 +47,6 @@ module.exports = (app) => {
     });
 
     app.on("issues.edited", async (context) => {
-
         // Check if the event was triggered by a bot
         if (context.isBot) {
             console.info('Ignoring event triggered by a bot');

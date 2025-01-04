@@ -35,31 +35,39 @@ module.exports = (router, probot) => {
             res.status(500).send('Internal Server Error');
         }
     });
-    
-
-    router.post('/epic/update', validateRequest, (req, res) => {
-        try {
-            postHandler.epicUpdate(req, res, probot);
-        } catch (error) {
-            console.error('Error handling /epic/update', error);
-            res.status(500).send('Internal Server Error');
-        }
-    });
 
     router.post('/task/update', validateRequest, (req, res) => {
         try {
-            postHandler.submitData(req, res, probot);
+            postHandler.taskUpdate(req, res, probot);
         } catch (error) {
             console.error('Error handling /task/update:', error);
             res.status(500).send('Internal Server Error');
         }
     });
 
+    router.post('/task/add', validateRequest, (req, res) => {
+        try {
+            postHandler.taskCreate(req, res, probot);
+        } catch (error) {
+            console.error('Error handling /task/add:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    })
+
     router.post('/epic/setup', validateRequest, (req, res) => {
         try {
             postHandler.epicSetup(req, res, probot);
         } catch (error) {
             console.error('Error handling /epic/setup:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+
+    router.post('/epic/update', validateRequest, (req, res) => {
+        try {
+            postHandler.epicUpdate(req, res, probot);
+        } catch (error) {
+            console.error('Error handling /epic/update', error);
             res.status(500).send('Internal Server Error');
         }
     });
