@@ -1,8 +1,8 @@
-const postHandler = require('../handlers/postHandler');
-const express = require('express');
+import { test, taskUpdate, taskCreate, epicSetup, epicUpdate } from '../handlers/postHandler.js';
+import { json } from 'express';
 
-module.exports = (router, probot) => {
-    router.use(express.json());
+export default (router, probot) => {
+    router.use(json());
     // Middleware for request validation (optional)
     const validateRequest = (req, res, next) => {
         // Add validation logic here
@@ -10,61 +10,62 @@ module.exports = (router, probot) => {
     };
 
     //Dummy routes for internal test calls
-    router.post('/test', validateRequest, (req, res) => {
+    router.post('/test', validateRequest, async(req, res) => {
         try {
-            postHandler.test(req, res, probot);
+            test(req, res, probot);
         } catch (error) {
             console.error('Error handling /test', error);
             res.status(500).send('Internal Server Error');
         }
     });
-    router.put('/test', validateRequest, (req, res) => {
+    router.put('/test', validateRequest, async(req, res) => {
         try {
-            postHandler.test(req, res, probot);
+            test(req, res, probot);
         } catch (error) {
             console.error('Error handling /test', error);
             res.status(500).send('Internal Server Error');
         }
     });
-    router.delete('/test', validateRequest, (req, res) => {
+    router.delete('/test', validateRequest, async(req, res) => {
         try {
-            postHandler.test(req, res, probot);
+            test(req, res, probot);
         } catch (error) {
             console.error('Error handling /test', error);
             res.status(500).send('Internal Server Error');
         }
     });
 
-    router.post('/task/update', validateRequest, (req, res) => {
+    router.post('/task/update', validateRequest, async(req, res) => {
         try {
-            postHandler.taskUpdate(req, res, probot);
+            await taskUpdate(req, res, probot);
         } catch (error) {
             console.error('Error handling /task/update:', error);
             res.status(500).send('Internal Server Error');
         }
     });
 
-    router.post('/task/add', validateRequest, (req, res) => {
+    router.post('/task/add', validateRequest, async(req, res) => {
         try {
-            postHandler.taskCreate(req, res, probot);
+            await taskCreate(req, res, probot);
         } catch (error) {
             console.error('Error handling /task/add:', error);
             res.status(500).send('Internal Server Error');
         }
     })
 
-    router.post('/epic/setup', validateRequest, (req, res) => {
+    router.post('/epic/setup', validateRequest, async(req, res) => {
         try {
-            postHandler.epicSetup(req, res, probot);
+            console.log("EPICSETUP CALLED");
+            await epicSetup(req, res, probot);
         } catch (error) {
             console.error('Error handling /epic/setup:', error);
             res.status(500).send('Internal Server Error');
         }
     });
 
-    router.post('/epic/update', validateRequest, (req, res) => {
+    router.post('/epic/update', validateRequest, async(req, res) => {
         try {
-            postHandler.epicUpdate(req, res, probot);
+            await epicUpdate(req, res, probot);
         } catch (error) {
             console.error('Error handling /epic/update', error);
             res.status(500).send('Internal Server Error');

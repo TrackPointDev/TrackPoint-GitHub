@@ -1,5 +1,5 @@
-const getHandler = require('../handlers/getHandler');
+import { helloWorld } from '../handlers/getHandler.js';
 
-module.exports = (router) => {
-    router.get('/hello-world', getHandler.helloWorld);
+export default (router) => {
+    router.get('/hello-world', helloWorld);
 };

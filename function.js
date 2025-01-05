@@ -1,9 +1,10 @@
-const { createNodeMiddleware, createProbot } = require("probot");
-const appFunction  = require("./app");
-const getRoutes = require('./routes/getRoutes');
-const postRoutes = require('./routes/postRoutes');
-const express = require("express");
-require('dotenv').config();
+import { createNodeMiddleware, createProbot } from "probot";
+import appFunction from "./app.js";
+import getRoutes from './routes/getRoutes.js';
+import postRoutes from './routes/postRoutes.js';
+import express from "express";
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Create an Express app
 const app = express();
@@ -16,8 +17,7 @@ app.use('/', createNodeMiddleware(appFunction, { probot }));
 getRoutes(app)
 postRoutes(app, probot)
 
-// Export the Express app for deployment as a Google Cloud Function entry point
-exports.probotApp = app;
+export const probotApp = app;
 
 // LOCAL DEV ONLY dont deploy this
 /*

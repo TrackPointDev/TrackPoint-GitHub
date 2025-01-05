@@ -1,12 +1,13 @@
-const { validateJsonObject } = require("../utils/jsonValidator");
-const axios = require('axios');
+import { validateJsonObject } from "../utils/jsonValidator.js";
+import axios from 'axios';
+
 const baseUrl = process.env.BACKEND_URL;
 const customRoute = '/epic/task';
 
 const url = baseUrl + customRoute;
 //const url = "http://localhost:3000/test";
 
-module.exports = (app) => {
+export default (app) => {
     app.on("issues.opened", async (context) => {
 
         // Check if the event was triggered by a bot

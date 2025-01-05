@@ -1,8 +1,8 @@
 // jsonValidator.js
-const axios = require('axios');
-const Ajv = require('ajv');
+import axios from 'axios';
+import Ajv from 'ajv';
 
-async function validateJsonObject(jsonObject, schemaUrl) {
+export const validateJsonObject = async(jsonObject, schemaUrl) => {
     try {
         // Fetch JSON schema
         const response = await axios.get(schemaUrl);
@@ -24,5 +24,3 @@ async function validateJsonObject(jsonObject, schemaUrl) {
         return false;
     }
 }
-
-module.exports = { validateJsonObject };
