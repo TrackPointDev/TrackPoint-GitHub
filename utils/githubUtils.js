@@ -423,7 +423,7 @@ export const deleteAllIssues = async (github, repositoryId) => {
         `;
         
         try {
-            await github.graphql(mutation);
+            const respond = await github.graphql(mutation);
             const batchIssueNumbers = batch.map(issue => issue.number);
             console.log('Deleted issue numbers:', batchIssueNumbers.join(', '));
             deletedIssueNumbers = deletedIssueNumbers.concat(batchIssueNumbers);

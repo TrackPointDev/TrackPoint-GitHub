@@ -236,8 +236,7 @@ export const epicDelete = async (req, res, app) => {
         });
 
         const response = await deleteIssues(github, updatedTasks);
-        console.log('Deleted issues: ' + JSON.stringify(response, null, 2));
-        console.log('Deleting all issues: ' + JSON.stringify(response, null, 2))
+        res.status(200).send('Epic deleted')
     } catch (error) {
         console.error('Error Deleting issues:', error);
         res.status(500).send('Error Deleting issues');
