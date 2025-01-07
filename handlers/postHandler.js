@@ -29,7 +29,12 @@ export const taskCreate = async (req, res, app) => {
     // Handle the POST request data
     const payload = req.body;
     const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`;
-    const { repoOwner, repoName, installationID, description, priority, story_point, title } = payload;
+    const { repoOwner, secret, repoName, installationID, description, priority, story_point, title } = payload;
+
+    if (secret !== process.env.WEBHOOK_SECRET) {
+        console.warn('Invalid secret:', secret);
+        return res.status(403).send('Forbidden');
+    }
 
     try {
         const isValid = await validateJsonObject(payload, schemaUrl);
@@ -65,9 +70,12 @@ export const taskUpdate = async (req, res, app) => {
     // Handle the POST request data
     const payload = req.body;
     const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`
-    const {repoOwner, repoName, installationID, description, issueID, priority, story_point, title} = payload
-    console.log('Recieved payload', payload)
+    const {repoOwner, secret, repoName, installationID, description, issueID, priority, story_point, title} = payload
 
+    if (secret !== process.env.WEBHOOK_SECRET) {
+        console.warn('Invalid secret:', secret);
+        return res.status(403).send('Forbidden');
+    }
     //TODO more delicate error handling
     try {
         const isValid = await validateJsonObject(payload, schemaUrl);
