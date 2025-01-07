@@ -29,12 +29,7 @@ export const taskCreate = async (req, res, app) => {
     // Handle the POST request data
     const payload = req.body;
     const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`;
-    const { repoOwner, secret, repoName, installationID, description, priority, story_point, title } = payload;
-
-    if (secret !== process.env.WEBHOOK_SECRET) {
-        console.warn('Invalid secret:', secret);
-        return res.status(403).send('Forbidden');
-    }
+    const { repoOwner, repoName, installationID, description, priority, story_point, title } = payload;
 
     try {
         const isValid = await validateJsonObject(payload, schemaUrl);
@@ -70,12 +65,8 @@ export const taskUpdate = async (req, res, app) => {
     // Handle the POST request data
     const payload = req.body;
     const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`
-    const {repoOwner, secret, repoName, installationID, description, issueID, priority, story_point, title} = payload
+    const {repoOwner, repoName, installationID, description, issueID, priority, story_point, title} = payload
 
-    if (secret !== process.env.WEBHOOK_SECRET) {
-        console.warn('Invalid secret:', secret);
-        return res.status(403).send('Forbidden');
-    }
     //TODO more delicate error handling
     try {
         const isValid = await validateJsonObject(payload, schemaUrl);
@@ -117,6 +108,21 @@ export const taskUpdate = async (req, res, app) => {
     }
 };
 
+export const taskDelete = async (req, res, app) => {
+    const payload = req.body;
+    const {repoOwner, repoName, installationID, issueID} = payload;
+
+    try {
+        const github = await authenticateGitHubClient(app, installationID);
+        const repositoryId = await fetchRepositoryId(github, repoOwner, repoName);
+        const response = await deleteIssueByNumber(github, repositoryId, issueID);
+        console.log('Deleting issue: ' + JSON.stringify(response, null, 2))
+        res.status(200).send('Issue deleted')
+    } catch (error) {
+        console.error('Error Deleting issues:', error);
+        res.status(500).send('Error Deleting issues');
+    }
+}
 
 export const epicSetup = async (req, res, app) => {
     const payload = req.body;
@@ -245,27 +251,6 @@ export const epicDelete = async (req, res, app) => {
 
         const response = await deleteIssues(github, updatedTasks);
         res.status(200).send('Epic deleted')
-    } catch (error) {
-        console.error('Error Deleting issues:', error);
-        res.status(500).send('Error Deleting issues');
-    }
-}
-
-export const taskDelete = async (req, res, app) => {
-    const payload = req.body;
-    const {repoOwner, repoName, secret, installationID, issueID} = payload;
-
-    if (secret !== process.env.WEBHOOK_SECRET) {
-        console.warn('Invalid secret:', secret);
-        return res.status(403).send('Forbidden');
-    }
-
-    try {
-        const github = await authenticateGitHubClient(app, installationID);
-        const repositoryId = await fetchRepositoryId(github, repoOwner, repoName);
-        const response = await deleteIssueByNumber(github, repositoryId, issueID);
-        console.log('Deleting issue: ' + JSON.stringify(response, null, 2))
-        res.status(200).send('Issue deleted')
     } catch (error) {
         console.error('Error Deleting issues:', error);
         res.status(500).send('Error Deleting issues');
