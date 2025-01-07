@@ -1,15 +1,29 @@
 import { validateJsonObject } from "../utils/jsonValidator.js";
-import { updateIssue, authenticateGitHubClient, fetchRepositoryId, createIssues, createLabel, createIssue, fetchRepoAndIssueNodeIds, updateIssues, fetchAndCacheLabels, fetchIssueNodeId} from '../utils/githubUtils.js';
+import * as githubUtils from '../utils/githubUtils.js';
+import { escapeFragment } from "ajv/dist/compile/util.js";
 
-export const test = async (req, res, app) => {
+const { 
+    updateIssue, 
+    authenticateGitHubClient, 
+    fetchRepositoryId, 
+    createIssues, 
+    createLabel, 
+    createIssue, 
+    fetchRepoAndIssueNodeIds, 
+    updateIssues, 
+    fetchAndCacheLabels, 
+    fetchIssueNodeId,
+    deleteIssueByNumber,
+    deleteIssues,
+    deleteAllIssues
+} = githubUtils;
+
+export const test = async (req, res) => {
     const payload = req.body;
     console.log(payload)
     res.status(200).send("request received successfully")
 }
 
-const setup = async (req, res, app) => {
-    //Code 
-}
 
 export const taskCreate = async (req, res, app) => {
     // Handle the POST request data
@@ -195,3 +209,80 @@ export const epicUpdate = async (req, res, app) => {
         res.status(500).send('Error updating issues');
     }
 };
+
+export const epicDelete = async (req, res, app) => {
+    const payload = req.body;
+    const {repoOwner, repoName, secret, installationID, tasks } = payload;
+
+    if (secret !== process.env.WEBHOOK_SECRET) {
+        console.warn('Invalid secret:', secret);
+        return res.status(403).send('Forbidden');
+    }
+
+    try {
+        const github = await authenticateGitHubClient(app, installationID);
+        const {issueNodeIds } = await fetchRepoAndIssueNodeIds(github, repoOwner, repoName, tasks.map(task => task.issueID));
+        // Update tasks with node IDs
+        const updatedTasks = tasks.map(task => {
+            const nodeId = issueNodeIds.find(issue => issue.number === task.issueID)?.id;
+            return {
+                ...task,
+                issueNodeId: nodeId,
+                labelIds: [
+                    task._priority,
+                    task._story_point
+                ]
+            };
+        });
+
+        const response = await deleteIssues(github, updatedTasks);
+        console.log('Deleted issues: ' + JSON.stringify(response, null, 2));
+        console.log('Deleting all issues: ' + JSON.stringify(response, null, 2))
+    } catch (error) {
+        console.error('Error Deleting issues:', error);
+        res.status(500).send('Error Deleting issues');
+    }
+}
+
+export const taskDelete = async (req, res, app) => {
+    const payload = req.body;
+    const {repoOwner, repoName, secret, installationID, issueID} = payload;
+
+    if (secret !== process.env.WEBHOOK_SECRET) {
+        console.warn('Invalid secret:', secret);
+        return res.status(403).send('Forbidden');
+    }
+
+    try {
+        const github = await authenticateGitHubClient(app, installationID);
+        const repositoryId = await fetchRepositoryId(github, repoOwner, repoName);
+        const response = await deleteIssueByNumber(github, repositoryId, issueID);
+        console.log('Deleting issue: ' + JSON.stringify(response, null, 2))
+        res.status(200).send('Issue deleted')
+    } catch (error) {
+        console.error('Error Deleting issues:', error);
+        res.status(500).send('Error Deleting issues');
+    }
+}
+
+export const deleteAllIssuesInRepo = async (req, res, app) => {
+    const payload = req.body;
+    const {repoOwner, repoName, secret, installationID} = payload;
+
+    if (secret !== process.env.WEBHOOK_SECRET) {
+        console.warn('Invalid secret:', secret);
+        return res.status(403).send('Forbidden');
+    }
+
+    try {
+        const github = await authenticateGitHubClient(app, installationID);
+        const repositoryId = await fetchRepositoryId(github, repoOwner, repoName);
+
+        const response = await deleteAllIssues(github, repositoryId);
+        console.log('Deleted all issues:', response);
+        res.status(200).send('Issues deleted');
+    } catch (error) {
+        console.error('Error Deleting issues:', error);
+        res.status(500).send('Error Deleting issues');
+    }
+}

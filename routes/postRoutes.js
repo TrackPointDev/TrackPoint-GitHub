@@ -1,4 +1,14 @@
-import { test, taskUpdate, taskCreate, epicSetup, epicUpdate } from '../handlers/postHandler.js';
+import { 
+    test, 
+    taskUpdate, 
+    taskCreate, 
+    epicSetup, 
+    epicUpdate, 
+    epicDelete, 
+    taskDelete,
+    deleteAllIssuesInRepo
+} from '../handlers/postHandler.js';
+
 import { json } from 'express';
 
 export default (router, probot) => {
@@ -68,6 +78,34 @@ export default (router, probot) => {
             await epicUpdate(req, res, probot);
         } catch (error) {
             console.error('Error handling /epic/update', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+
+    router.post('/epic/delete', validateRequest, async(req, res) => {
+        try {
+            await epicDelete(req, res, probot);
+        } catch (error) {
+            console.error('Error handling /epic/delete', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+    
+
+    router.post('/task/delete', validateRequest, async(req, res) => {
+        try {
+            await taskDelete(req, res, probot);
+        } catch (error) {
+            console.error('Error handling /task/delete', error);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+
+    router.post('/delete-all-issues', validateRequest, async(req, res) => {
+        try {
+            await deleteAllIssuesInRepo(req, res, probot);
+        } catch (error) {
+            console.error('Error handling /delete-all-issues', error);
             res.status(500).send('Internal Server Error');
         }
     });

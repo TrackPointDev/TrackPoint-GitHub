@@ -25,7 +25,7 @@ export const createIssues = async (github, repositoryId, tasks) => {
         const createdIssues = [];
 
         // Process tasks in smaller batches
-        const batchSize = 5; // Adjust batch size as needed
+        const batchSize = 10; // Adjust batch size as needed
         for (let i = 0; i < tasks.length; i += batchSize) {
             const batchTasks = tasks.slice(i, i + batchSize);
 
@@ -298,4 +298,140 @@ export const updateIssues = async (github, updatedTasks) => {
         console.error('Error updating issues:', error);
         throw error;
     }
+};
+
+export const deleteIssues = async (github, updatedTasks) => {
+    try {
+        // Construct the mutation string dynamically for deleting issues
+        const mutationParts = updatedTasks.map((task, index) => `
+            issue${index}: deleteIssue(input: { issueId: "${task.issueNodeId}" }) {
+                clientMutationId
+            }
+        `);
+
+        const mutation = `
+            mutation {
+                ${mutationParts.join('\n')}
+            }
+        `;
+
+        console.log('Executing bulk delete mutation:', mutation);
+
+        const deleteResponse = await github.graphql(mutation);
+        console.log('Bulk delete response:', deleteResponse);
+
+        // Log the issue numbers that were deleted
+        const deletedIssueNumbers = updatedTasks.map(task => task.issueNumber);
+        console.log('Deleted issue numbers:', deletedIssueNumbers.join(', '));
+
+        return deletedIssueNumbers;
+    } catch (error) {
+        console.error('Error deleting issues:', error);
+        throw error;
+    }
+};
+
+export const deleteIssueByNumber = async (github, repositoryId, issueNumber) => {
+    // Step 1: Fetch the issue ID using the issue number
+    const fetchIssueIdQuery = `
+        query($repositoryId: ID!, $issueNumber: Int!) {
+            node(id: $repositoryId) {
+                ... on Repository {
+                    issue(number: $issueNumber) {
+                        id
+                    }
+                }
+            }
+        }
+    `;
+
+    try {
+        const issueData = await github.graphql(fetchIssueIdQuery, { repositoryId, issueNumber });
+        const issueId = issueData.node.issue.id;
+
+        // Step 2: Delete the issue using the issue ID
+        const deleteIssueMutation = `
+            mutation($issueId: ID!) {
+                deleteIssue(input: { issueId: $issueId }) {
+                    clientMutationId
+                }
+            }
+        `;
+
+        const response = await github.graphql(deleteIssueMutation, { issueId });
+        return response;
+    } catch (error) {
+        console.error('Error deleting issue:', error);
+        throw error;
+    }
+};
+
+export const deleteAllIssues = async (github, repositoryId) => {
+    const fetchIssuesQuery = `
+        query($repositoryId: ID!, $cursor: String) {
+            node(id: $repositoryId) {
+                ... on Repository {
+                    issues(first: 100, after: $cursor, states: OPEN) {
+                        pageInfo {
+                            endCursor
+                            hasNextPage
+                        }
+                        edges {
+                            node {
+                                id
+                                number
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    `;
+
+    let cursor = null;
+    let hasNextPage = true;
+    let allIssues = [];
+    let deletedIssueNumbers = [];
+
+    // Fetch all open issue IDs and numbers
+    while (hasNextPage) {
+        const response = await github.graphql(fetchIssuesQuery, { repositoryId, cursor });
+        const issues = response.node.issues.edges;
+        hasNextPage = response.node.issues.pageInfo.hasNextPage;
+        cursor = response.node.issues.pageInfo.endCursor;
+
+        allIssues = allIssues.concat(issues.map(issue => ({
+            id: issue.node.id,
+            number: issue.node.number
+        })));
+    }
+
+    // Batch delete issues using aliases
+    const batchSize = 10; // Adjust batch size as needed
+    for (let i = 0; i < allIssues.length; i += batchSize) {
+        const batch = allIssues.slice(i, i + batchSize);
+        const deleteMutations = batch.map((issue, index) => `
+            issue${index}: deleteIssue(input: { issueId: "${issue.id}" }) {
+                clientMutationId
+            }
+        `).join('\n');
+
+        const mutation = `
+            mutation {
+                ${deleteMutations}
+            }
+        `;
+        
+        try {
+            await github.graphql(mutation);
+            const batchIssueNumbers = batch.map(issue => issue.number);
+            console.log('Deleted issue numbers:', batchIssueNumbers.join(', '));
+            deletedIssueNumbers = deletedIssueNumbers.concat(batchIssueNumbers);
+        } catch (error) {
+            console.error('Error deleting issues:', error);
+            throw error;
+        }
+    }
+    
+    return deletedIssueNumbers;
 };
