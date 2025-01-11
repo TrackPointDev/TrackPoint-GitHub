@@ -2,7 +2,7 @@ import { validateJsonObject } from "../utils/jsonValidator.js";
 import axios from 'axios';
 
 const baseUrl = process.env.BACKEND_URL;
-const customRoute = '/epic/task';
+const customRoute = '/epic/tasks';
 
 const url = baseUrl + customRoute;
 //const url = "http://localhost:3000/test";
@@ -25,22 +25,29 @@ export default (app) => {
             "repoOwner": owner,
             "repo": repo,
             "description" : context.payload.issue.body || "",
-            "issueID" : issueNumber.toString(),
+            "issueID" : issueNumber,
             "priority" : "High",
             "story_point" : 8,
             "title" : context.payload.issue.title
         };
-
+        
         const isValid = await validateJsonObject(jsonObject, schemaUrl);
 
         if (!isValid) {
             console.error(`Failed to validate JSON for issue #${issueNumber}`);
             return;
-        }
+        };    
         
         try {
             // Send the JSON object to the backend
-            const response = await axios.post(url, jsonObject);
+            const headers = {
+                'Content-Type': 'application/json',
+                'epicID': owner
+            };
+            const _url = url + "/add"
+            const response = await axios.post(_url, jsonObject, {
+                headers: headers
+            });
             console.info(`Successfully post data for issue #${issueNumber} to backend`, response.data);
         } catch (error) {
             console.error(`Failed to post data for issue #${issueNumber} to backend`, error);
@@ -63,7 +70,7 @@ export default (app) => {
             "repoOwner": owner,
             "repo": repo,
             "description" : context.payload.issue.body || "",
-            "issueID" : issueNumber.toString(),
+            "issueID" : issueNumber,
             "priority" : "High",
             "story_point" : 8,
             "title" : context.payload.issue.title
@@ -77,10 +84,20 @@ export default (app) => {
 
         try {
             // Send the JSON object to the backend
-            const response = await axios.put(url, jsonObject);
+            const headers = {
+                'Content-Type': 'application/json',
+                'epicID': owner
+            };
+
+            const _url = url + "/update"
+            
+            const response = await axios.put(_url, jsonObject, {
+                headers: headers
+            });
+
             console.info(`Successfully put data for issue #${issueNumber} to backend`, response.data);
         } catch (error) {
             console.error(`Failed to put data for issue #${issueNumber} to backend`, error);
-        }
+        } 
     });
 };

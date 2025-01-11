@@ -8,4 +8,6 @@ lib
 */*/*.pem
 *.pem
 *.sh
-src/oldindex.ts
+
+tests
+vitest*

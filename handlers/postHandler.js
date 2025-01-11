@@ -1,7 +1,9 @@
 import { validateJsonObject } from "../utils/jsonValidator.js";
 import * as githubUtils from '../utils/githubUtils.js';
-import { escapeFragment } from "ajv/dist/compile/util.js";
-
+import axios from 'axios';
+const baseUrl = process.env.BACKEND_URL;
+const customRoute = '/epic/tasks';
+const url = baseUrl + customRoute;
 const { 
     updateIssue, 
     authenticateGitHubClient, 
@@ -54,6 +56,30 @@ export const taskCreate = async (req, res, app) => {
         const issue = await createIssue(github, repositoryId, title, description, [labelCache[priorityLabelName], labelCache[storyPointLabelName]]);
 
         console.log(`Issue #${issue.number} created successfully.`);
+        //TODO should not be called here
+        const jsonObject = {
+            "repoOwner": repoOwner,
+            "repo": repoName,
+            "description" : description,
+            "issueID" : issue.number,
+            "priority" : priorityLabelName,
+            "story_point" : storyPointLabelName,
+            "title" : title
+        };
+        
+        const headers = {
+            'Content-Type': 'application/json',
+            'epicID': owner
+        };
+
+        const _url = url + "/update";
+        
+        const response = await axios.put(_url, jsonObject, {
+            headers: headers
+        });
+
+        console.log("axios response for taskCreate(): " + response.data);
+
         return res.status(200).json({ number: issue.number });
     } catch (error) {
         console.error('Error processing request:', error);
