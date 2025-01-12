@@ -1,4 +1,4 @@
-import { validateJsonObject } from "../utils/jsonValidator.js";
+import { validateJsonObject, extractTaskID } from "../utils/jsonValidator.js";
 import axios from 'axios';
 
 const baseUrl = process.env.BACKEND_URL;
@@ -9,7 +9,6 @@ const url = baseUrl + customRoute;
 
 export default (app) => {
     app.on("issues.opened", async (context) => {
-
         // Check if the event was triggered by a bot
         if (context.isBot) {
             console.info('Ignoring event triggered by a bot');
@@ -28,7 +27,8 @@ export default (app) => {
             "issueID" : issueNumber,
             "priority" : "High",
             "story_point" : 8,
-            "title" : context.payload.issue.title
+            "title" : context.payload.issue.title,
+            "taskID" : null
         };
         
         const isValid = await validateJsonObject(jsonObject, schemaUrl);
@@ -63,8 +63,10 @@ export default (app) => {
 
         const { owner, repo } = context.repo();
         const issueNumber = context.payload.issue.number;
-        const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`
-       
+        const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`;
+        
+        const taskID = extractTaskID(context.payload.issue.body);
+        console.log("TaskID =" + taskID);
         //TODO make priority and storypoint take from project
         const jsonObject = {
             "repoOwner": owner,
@@ -73,7 +75,8 @@ export default (app) => {
             "issueID" : issueNumber,
             "priority" : "High",
             "story_point" : 8,
-            "title" : context.payload.issue.title
+            "title" : context.payload.issue.title,
+            "taskID" : taskID,
         };
           
         const isValid = await validateJsonObject(jsonObject, schemaUrl);
@@ -89,8 +92,7 @@ export default (app) => {
                 'epicID': owner
             };
 
-            const _url = url + "/update"
-            
+            const _url = url + "/update";
             const response = await axios.put(_url, jsonObject, {
                 headers: headers
             });

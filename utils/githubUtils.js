@@ -1,4 +1,3 @@
-
 export const authenticateGitHubClient = async (app, installationID) => {
     console.log('Authenticating with installation ID:', installationID);
     return await app.auth(installationID);

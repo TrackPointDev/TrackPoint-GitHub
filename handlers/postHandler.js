@@ -1,4 +1,4 @@
-import { validateJsonObject } from "../utils/jsonValidator.js";
+import { validateJsonObject, ensureTaskID } from "../utils/jsonValidator.js";
 import * as githubUtils from '../utils/githubUtils.js';
 import axios from 'axios';
 const baseUrl = process.env.BACKEND_URL;
@@ -31,8 +31,7 @@ export const taskCreate = async (req, res, app) => {
     // Handle the POST request data
     const payload = req.body;
     const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`;
-    const { repoOwner, repoName, installationID, description, priority, story_point, title } = payload;
-
+    const { repoOwner, repoName, installationID, description, priority, story_point, title, taskID } = payload;
     try {
         const isValid = await validateJsonObject(payload, schemaUrl);
         if (!isValid) {
@@ -52,28 +51,29 @@ export const taskCreate = async (req, res, app) => {
         if(!labelCache[storyPointLabelName]) {
             labelCache[storyPointLabelName] = await createLabel(github, repositoryId, storyPointLabelName, 'FF0000');
         }
-        
-        const issue = await createIssue(github, repositoryId, title, description, [labelCache[priorityLabelName], labelCache[storyPointLabelName]]);
+       
+        const _description = description + '\nTaskID:' + taskID
+        const issue = await createIssue(github, repositoryId, title, _description, [labelCache[priorityLabelName], labelCache[storyPointLabelName]]);
 
         console.log(`Issue #${issue.number} created successfully.`);
         //TODO should not be called here
         const jsonObject = {
             "repoOwner": repoOwner,
             "repo": repoName,
-            "description" : description,
+            "description" : _description,
             "issueID" : issue.number,
             "priority" : priorityLabelName,
             "story_point" : storyPointLabelName,
-            "title" : title
+            "title" : title,
+            "taskID": taskID
         };
         
         const headers = {
             'Content-Type': 'application/json',
-            'epicID': owner
+            'epicID': repoOwner
         };
 
         const _url = url + "/update";
-        
         const response = await axios.put(_url, jsonObject, {
             headers: headers
         });
@@ -91,7 +91,7 @@ export const taskUpdate = async (req, res, app) => {
     // Handle the POST request data
     const payload = req.body;
     const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`
-    const {repoOwner, repoName, installationID, description, issueID, priority, story_point, title} = payload
+    const {repoOwner, repoName, installationID, description, issueID, priority, story_point, title, taskID} = payload
 
     //TODO more delicate error handling
     try {
@@ -115,11 +115,12 @@ export const taskUpdate = async (req, res, app) => {
         if(!labelCache[storyPointLabelName]) {
             labelCache[storyPointLabelName] = await createLabel(github, repositoryId, storyPointLabelName, 'FF0000');
         }
-        
+
+        let updatedDescription = ensureTaskID(description, taskID)
         // Construct the updateData object
         const updateData = {
             title: title, 
-            body: description, 
+            body: updatedDescription, 
             labelIds: [labelCache[priorityLabelName], labelCache[storyPointLabelName]]
         };
 
@@ -178,11 +179,13 @@ export const epicSetup = async (req, res, app) => {
             // Preserve the original string
             task._priorityLabelId = labelCache[priorityLabelName];
             task._storyPointLabelId = labelCache[storyPointLabelName];
+            task._description = ensureTaskID(task.description, task.taskID);
         }
         // Update tasks with label IDs
         const updatedTasks = tasks.map(task => {
             return {
                 ...task,
+                description: task._description,
                 labelIds: [
                     task._priorityLabelId,
                     task._storyPointLabelId
@@ -226,6 +229,7 @@ export const epicUpdate = async (req, res, app) => {
             // Preserve the original string
             task._priority = labelCache[priorityLabelName]
             task._story_point = labelCache[storyPointLabelName]
+            task._description = ensureTaskID(task.description, task.taskID);
         }
 
         // Update tasks with node IDs
@@ -234,6 +238,7 @@ export const epicUpdate = async (req, res, app) => {
             return {
                 ...task,
                 issueNodeId: nodeId,
+                description: task._description,
                 labelIds: [
                     task._priority,
                     task._story_point
