@@ -9,23 +9,37 @@ const url = baseUrl + customRoute;
 
 export default (app) => {
     app.on("issues.opened", async (context) => {
-        const { owner, repo } = context.repo();
+        const { repo } = context.repo();
         const issueNumber = context.payload.issue.number;
         const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`;
         
         //TODO make priority and storypoint take from project
         const taskID = extractTaskID(context.payload.issue.body);
         console.log("TaskID =" + taskID);
+        // Fetch labels for the issue
+        const labels = context.payload.issue.labels;
+
+        let priority = "Must Have";
+        let storyPoint = 8;
+
+        labels.forEach(label => {
+            if (label.name.startsWith("priority:")) {
+                priority = label.name.split(":")[1].trim();
+            } else if (label.name.startsWith("story point:")) {
+                storyPoint = parseInt(label.name.split(":")[1].trim(), 10);
+            }
+        });
 
         const jsonObject = {
             "description" : context.payload.issue.body || "",
             "issueID" : issueNumber,
-            "priority" : "High",
-            "story_point" : 8,
+            "priority" : priority,
+            "story_point" : storyPoint,
             "taskID" : taskID,
             "title" : context.payload.issue.title,
         };
-        
+        console.log("---------------------------------")
+        console.log(jsonObject)
         const isValid = await validateJsonObject(jsonObject, schemaUrl);
 
         if (!isValid) {
@@ -39,7 +53,8 @@ export default (app) => {
                 'Content-Type': 'application/json',
                 'epicID': repo
             };
-            const _url = url + "/update"
+            const _url = url + "/update";
+            //const _url = "http://localhost:3000/test";
             const response = await axios.put(_url, jsonObject, {
                 headers: headers
             });
@@ -62,12 +77,26 @@ export default (app) => {
         
         const taskID = extractTaskID(context.payload.issue.body);
         console.log("TaskID =" + taskID);
-        //TODO make priority and storypoint take from project
+
+        // Fetch labels for the issue
+        const labels = context.payload.issue.labels;
+
+        let priority = "Must Have";
+        let storyPoint = 8;
+
+        labels.forEach(label => {
+            if (label.name.startsWith("priority:")) {
+                priority = label.name.split(":")[1].trim();
+            } else if (label.name.startsWith("story point:")) {
+                storyPoint = parseInt(label.name.split(":")[1].trim(), 10);
+            }
+        });
+
         const jsonObject = {
             "description" : context.payload.issue.body || "",
             "issueID" : issueNumber,
-            "priority" : "High",
-            "story_point" : 8,
+            "priority" : priority,
+            "story_point" : storyPoint,
             "taskID" : taskID,
             "title" : context.payload.issue.title,
         };
