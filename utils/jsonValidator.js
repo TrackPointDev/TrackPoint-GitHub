@@ -33,7 +33,7 @@ export function extractTaskID(str) {
     
     // If a match is found, return the first capturing group (the digits)
     if (match) {
-        return match[1];
+        return +match[1];
     } else {
         // Return null or an appropriate message if no match is found
         return null;
