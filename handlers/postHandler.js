@@ -2,7 +2,7 @@ import { validateJsonObject, ensureTaskID } from "../utils/jsonValidator.js";
 import * as githubUtils from '../utils/githubUtils.js';
 import axios from 'axios';
 const baseUrl = process.env.BACKEND_URL;
-const customRoute = '/epic/tasks';
+const customRoute = '/epics/tasks';
 const url = baseUrl + customRoute;
 const { 
     updateIssue, 

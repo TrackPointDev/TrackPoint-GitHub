@@ -2,7 +2,7 @@ import { validateJsonObject, extractTaskID } from "../utils/jsonValidator.js";
 import axios from 'axios';
 
 const baseUrl = process.env.BACKEND_URL;
-const customRoute = '/epic/tasks';
+const customRoute = '/epics/tasks';
 
 const url = baseUrl + customRoute;
 //const url = "http://localhost:3000/test";
