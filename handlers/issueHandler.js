@@ -42,7 +42,7 @@ export default (app) => {
                 'epicID': owner
             };
             const _url = url + "/update"
-            const response = await axios.post(_url, jsonObject, {
+            const response = await axios.put(_url, jsonObject, {
                 headers: headers
             });
             console.info(`Successfully post data for issue #${issueNumber} to backend`, response.data);
