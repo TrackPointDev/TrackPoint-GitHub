@@ -39,7 +39,7 @@ export default (app) => {
             // Send the JSON object to the backend
             const headers = {
                 'Content-Type': 'application/json',
-                'epicID': owner
+                'epicID': repo
             };
             const _url = url + "/update"
             const response = await axios.put(_url, jsonObject, {
@@ -86,7 +86,7 @@ export default (app) => {
             // Send the JSON object to the backend
             const headers = {
                 'Content-Type': 'application/json',
-                'epicID': owner
+                'epicID': repo
             };
 
             const _url = url + "/update";

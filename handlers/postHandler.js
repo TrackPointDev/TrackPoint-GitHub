@@ -70,7 +70,7 @@ export const taskCreate = async (req, res, app) => {
         
         const headers = {
             'Content-Type': 'application/json',
-            'epicID': repoOwner
+            'epicID': repoName
         };
 
         const _url = url + "/update";
