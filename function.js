@@ -14,8 +14,8 @@ const probot = createProbot();
 app.use('/', createNodeMiddleware(appFunction, { probot }));
 
 // Define custom routes
-getRoutes(app)
-postRoutes(app, probot)
+getRoutes(app, probot);
+postRoutes(app, probot);
 
 export const probotApp = app;
 

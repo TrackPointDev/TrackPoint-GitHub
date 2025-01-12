@@ -1,5 +1,7 @@
-import { helloWorld } from '../handlers/getHandler.js';
+import { helloWorld, getTask } from '../handlers/getHandler.js';
 
-export default (router) => {
+export default (router, probot) => {
     router.get('/hello-world', helloWorld);
+
+    router.get('/task/get/:id', (req, res) => getTask(req, res, probot));
 };
