@@ -14,6 +14,9 @@ export default (app) => {
         const schemaUrl = `https://raw.githubusercontent.com/TrackPointDev/TrackPoint-json-schemas/refs/heads/main/json-schemas/task_schema.json`;
         
         //TODO make priority and storypoint take from project
+        const taskID = extractTaskID(context.payload.issue.body);
+        console.log("TaskID =" + taskID);
+
         const jsonObject = {
             "repoOwner": owner,
             "repo": repo,
@@ -22,7 +25,7 @@ export default (app) => {
             "priority" : "High",
             "story_point" : 8,
             "title" : context.payload.issue.title,
-            "taskID" : null
+            "taskID" : taskID
         };
         
         const isValid = await validateJsonObject(jsonObject, schemaUrl);
