@@ -18,14 +18,12 @@ export default (app) => {
         console.log("TaskID =" + taskID);
 
         const jsonObject = {
-            "repoOwner": owner,
-            "repo": repo,
             "description" : context.payload.issue.body || "",
             "issueID" : issueNumber,
             "priority" : "High",
             "story_point" : 8,
+            "taskID" : taskID,
             "title" : context.payload.issue.title,
-            "taskID" : taskID
         };
         
         const isValid = await validateJsonObject(jsonObject, schemaUrl);
@@ -66,14 +64,12 @@ export default (app) => {
         console.log("TaskID =" + taskID);
         //TODO make priority and storypoint take from project
         const jsonObject = {
-            "repoOwner": owner,
-            "repo": repo,
             "description" : context.payload.issue.body || "",
             "issueID" : issueNumber,
             "priority" : "High",
             "story_point" : 8,
-            "title" : context.payload.issue.title,
             "taskID" : taskID,
+            "title" : context.payload.issue.title,
         };
           
         const isValid = await validateJsonObject(jsonObject, schemaUrl);
