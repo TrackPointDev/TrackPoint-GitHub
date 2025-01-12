@@ -1,13 +1,10 @@
-const issueHandler = require('./handlers/issueHandler');
+import issueHandler from './handlers/issueHandler.js';
 
 /**
  * @param {import('probot').Probot} app
- * @param {Object} options
- * @param {Function} options.getRouter
  */
 
-module.exports = (app, { getRouter }) => {
+export default (app) => {
     app.log("Yay! The app.log was loaded!");
-    console.log("Yay! The app.console was loaded!")
     issueHandler(app);
 };

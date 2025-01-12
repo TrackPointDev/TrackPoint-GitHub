@@ -1,8 +1,7 @@
-// jsonValidator.js
-const axios = require('axios');
-const Ajv = require('ajv');
+import axios from 'axios';
+import Ajv from 'ajv';
 
-async function validateJsonObject(jsonObject, schemaUrl) {
+export const validateJsonObject = async(jsonObject, schemaUrl) => {
     try {
         // Fetch JSON schema
         const response = await axios.get(schemaUrl);
@@ -25,4 +24,26 @@ async function validateJsonObject(jsonObject, schemaUrl) {
     }
 }
 
-module.exports = { validateJsonObject };
+export function extractTaskID(str) {
+    // Define the regular expression pattern
+    const regex = /TaskID:(\d+)/;
+    
+    // Use match to find the pattern in the string
+    const match = str.match(regex);
+    
+    // If a match is found, return the first capturing group (the digits)
+    if (match) {
+        return +match[1];
+    } else {
+        // Return null or an appropriate message if no match is found
+        return null;
+    }
+}
+
+export function ensureTaskID(description, taskID) {
+    let _description = description;
+    if (extractTaskID(description) === null) {
+        _description = `${description}\nTaskID:${taskID}`;
+    }
+    return _description;
+}

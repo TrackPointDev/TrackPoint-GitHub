@@ -7,5 +7,4 @@ coverage
 lib
 */*/*.pem
 *.pem
-
-src/oldindex.ts
+*.sh

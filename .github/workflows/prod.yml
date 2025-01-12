@@ -37,4 +37,5 @@ jobs:
                 --set-env-vars "APP_ID"=${{ secrets.APP_ID }} \
                 --set-env-vars "PRIVATE_KEY"=${{ secrets.PRIVATE_KEY }} \
                 --set-env-vars "WEBHOOK_SECRET"=${{ secrets.WEBHOOK_SECRET }} \
+                --set-env-vars "BACKEND_URL"=${{ secrets.BACKEND_URL }} \
                 --service-account=trackpoint-github-app@trackpointdb.iam.gserviceaccount.com

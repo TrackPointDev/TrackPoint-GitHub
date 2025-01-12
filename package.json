@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "TrackPoints GitHub integration using Probot & Google Cloud Functions",
+  "type": "module",
   "scripts": {
     "start": "node function.js",
-    "test": "node test.js"
+    "test": "vitest"
   },
   "author": "TrackPoint (https://github.com/TrackPointDev)",
   "license": "ISC",
@@ -14,13 +15,26 @@
     "@google-cloud/functions-framework": "^3.4.4",
     "ajv": "^8.17.1",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
+    "graphql": "^16.10.0",
+    "graphql-request": "^7.1.2",
     "probot": "^12.4.0"
   },
   "devDependencies": {
-    "nock": "^13.2.9",
+    "eslint": "^9.17.0",
+    "graphql-query-test-mock": "^0.12.1",
+    "msw": "^2.7.0",
     "smee-client": "^1.2.3",
-    "uvu": "^0.5.6"
+    "supertest": "^7.0.0",
+    "uvu": "^0.5.6",
+    "vitest": "^2.1.8",
+    "whatwg-fetch": "^3.6.20"
+  },
+  "vitest": {
+    "setupFiles": [
+      "<rootDir>/tests/setupTests.js"
+    ]
   },
   "release": {
     "branches": [

@@ -1,0 +1,8 @@
+# Ignore all test files and directories
+vitest.config.js
+tests/
+.devcontainer/
+.github/
+# Ignore other unnecessary files
+*.log
+*.tmp

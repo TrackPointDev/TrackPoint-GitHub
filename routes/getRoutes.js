@@ -1,5 +1,7 @@
-const getHandler = require('../handlers/getHandler');
+import { helloWorld, getTask } from '../handlers/getHandler.js';
 
-module.exports = (router) => {
-    router.get('/hello-world', getHandler.helloWorld);
+export default (router, probot) => {
+    router.get('/hello-world', helloWorld);
+
+    router.get('/task/get/:id', (req, res) => getTask(req, res, probot));
 };
