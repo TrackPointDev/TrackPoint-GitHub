@@ -38,7 +38,7 @@ export default (app) => {
                 'Content-Type': 'application/json',
                 'epicID': owner
             };
-            const _url = url + "/add"
+            const _url = url + "/update"
             const response = await axios.post(_url, jsonObject, {
                 headers: headers
             });
